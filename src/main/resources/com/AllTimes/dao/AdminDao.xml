@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.AllTimes.dao.AdminDao">
+
+	<select id="MemberList" resultType="com.AllTimes.dto.MemberDto">
+	<![CDATA[
+		SELECT MID, MNAME, MAGE, MMAIL
+		FROM (
+		SELECT /*+INDEX(MEMBER PK_MID) */ ROW_NUMBER() OVER (ORDER BY MID) RN, MID, MPW, MNAME, MMAIL, MAGE, MCONTACT 
+		FROM MEMBER WHERE ROWNUM <= #{pageNo}*#{amount} ORDER BY NLSSORT(MID,'NLS_SORT=generic_m_ci' ))
+		WHERE RN > (#{pageNo}-1)* #{amount} 
+		]]>
+	</select>
+	
+	
+	<select id="selectReporterModify" resultType="com.AllTimes.dto.MemberDto">
+		SELECT MID, MNAME, MMAIL, MAGE, MCONTACT FROM MEMBER WHERE MID = #{mid}
+	</select>
+	
+	<select id="MemberPwGet" resultType="String">
+		SELECT MPW FROM MEMBER WHERE MID=#{mid}
+	</select>
+	
+	<update id="MemberModify">
+		UPDATE MEMBER
+		SET MID=#{mid}, MPW=#{mpw}, MNAME=#{mname}, MMAIL=#{mmail}, MAGE=#{mage}, MCONTACT=#{mcontact}
+		WHERE MID = #{mid}
+	</update>
+	
+	<select id="memberTelCheck" resultType="String">
+		SELECT MCONTACT FROM MEMBER WHERE MCONTACT=#{inputContact}
+	</select>
+	
+	<select id="ReporterArticleManagement" resultType="String">
+		SELECT 
+	</select>
+	
+	<select id="ReporterModifyForm" resultType="com.AllTimes.dto.ReporterDto">
+		SELECT RID, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT FROM REPORTER WHERE RID = #{rid}
+	</select>
+	
+	<select id="ReporterPwGet" resultType="String">
+		SELECT RPW FROM REPORTER WHERE RID=#{rid}
+	</select>
+	
+	<update id="ReporterModify">
+		UPDATE REPORTER
+		SET RID=#{rid}, RPW=#{rpw}, RNAME=#{rname}, RMAIL=#{rmail}, RCONTACT=#{rcontact}
+		WHERE RID=#{rid}
+	</update>
+	
+	<update id="ReporterInfo">
+		UPDATE REPORTER
+		SET RID=#{rid}, RPW=#{rpw}, RNAME=#{rname}, RMAIL=#{rmail}, RCONTACT=#{rcontact}
+		WHERE RID=#{rid}
+	</update>
+	
+	<delete id="reporterDelete">
+		DELETE FROM REPORTER WHERE RID=#{rid}
+	</delete>
+	
+	<update id="stateToggle">
+		UPDATE REPORTER
+		SET RSTATE=#{rstate}
+		WHERE RID=#{rid}
+	</update>
+	
+	
+	<insert id="registReporter">
+		INSERT INTO REPORTER(RID, RPW, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT)
+		VALUES(#{rid}, #{rpw}, #{rname}, 1, #{rmail}, #{rprofile}, #{rcontact})
+	</insert>
+	
+	<select id="oldFileSelect" resultType="String">
+		SELECT RPROFILE FROM REPORTER WHERE RID=#{rid}
+	</select>
+	
+	<update id="profileChange">
+		UPDATE REPORTER
+		SET RPROFILE = #{rprofile}
+		WHERE RID = #{rid}
+	</update>
+	
+	<select id="reporterIdCheck" resultType="String">
+		SELECT RID FROM REPORTER WHERE RID=#{inputId}
+	</select>
+	
+	<select id="reporterTelCheck" resultType="String">
+		SELECT RCONTACT FROM REPORTER WHERE RCONTACT=#{inputContact}
+	</select>
+	
+	<select id="rSearchAll" resultType="com.AllTimes.dto.ReporterDto">
+	<![CDATA[
+		SELECT RID, RNAME, RSTATE, RMAIL
+		FROM (
+		SELECT /*+INDEX(REPORTER PK_RID) */ ROW_NUMBER() OVER (ORDER BY RID) RN, RID, RPW, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT 
+		FROM REPORTER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(RID,'NLS_SORT=generic_m_ci' ))
+		WHERE
+		RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(RID) LIKE UPPER('%'||#{keyword}||'%') OR 
+		UPPER(RNAME) LIKE UPPER('%'||#{keyword}||'%'))
+		]]>
+	</select>
+	
+	<select id="rSearchName" resultType="com.AllTimes.dto.ReporterDto">
+	<![CDATA[
+		SELECT RID, RNAME, RSTATE, RMAIL
+		FROM (
+		SELECT /*+INDEX(REPORTER PK_RID) */ ROW_NUMBER() OVER (ORDER BY RID) RN, RID, RPW, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT 
+		FROM REPORTER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(RID,'NLS_SORT=generic_m_ci' ))
+		WHERE
+		RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(RNAME) LIKE UPPER('%'||#{keyword}||'%'))
+		]]>
+	</select>
+	
+	<select id="rSearchId" resultType="com.AllTimes.dto.ReporterDto">
+	<![CDATA[
+		SELECT RID, RNAME, RSTATE, RMAIL
+		FROM (
+		SELECT /*+INDEX(REPORTER PK_RID) */ ROW_NUMBER() OVER (ORDER BY RID) RN, RID, RPW, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT 
+		FROM REPORTER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(RID,'NLS_SORT=generic_m_ci' ))
+		WHERE
+		RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(RID) LIKE UPPER('%'||#{keyword}||'%'))
+		]]>
+	</select>
+	
+	<select id="mSearchAll" resultType="com.AllTimes.dto.MemberDto">
+	<![CDATA[
+		SELECT MID, MNAME, MAGE, MMAIL
+		FROM (
+		SELECT /*+INDEX(MEMBER PK_MID) */ ROW_NUMBER() OVER (ORDER BY MID) RN, MID, MPW, MNAME, MMAIL, MAGE, MCONTACT 
+		FROM MEMBER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(MID,'NLS_SORT=generic_m_ci' ))
+		WHERE RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(MID) LIKE UPPER('%'||#{keyword}||'%') OR 
+		UPPER(MNAME) LIKE UPPER('%'||#{keyword}||'%')) 
+		]]>
+	</select>
+	
+	<select id="mSearchId" resultType="com.AllTimes.dto.MemberDto">
+	<![CDATA[
+		SELECT MID, MNAME, MAGE, MMAIL
+		FROM (
+		SELECT /*+INDEX(MEMBER PK_MID) */ ROW_NUMBER() OVER (ORDER BY MID) RN, MID, MPW, MNAME, MMAIL, MAGE, MCONTACT 
+		FROM MEMBER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(MID,'NLS_SORT=generic_m_ci' ))
+		WHERE RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(MID) LIKE UPPER('%'||#{keyword}||'%')) 
+		]]>
+	</select>
+	
+	<select id="mSearchName" resultType="com.AllTimes.dto.MemberDto">
+	<![CDATA[
+		SELECT MID, MNAME, MAGE, MMAIL
+		FROM (
+		SELECT /*+INDEX(MEMBER PK_MID) */ ROW_NUMBER() OVER (ORDER BY MID) RN, MID, MPW, MNAME, MMAIL, MAGE, MCONTACT 
+		FROM MEMBER WHERE ROWNUM <= #{cri.pageNo}*#{cri.amount} ORDER BY NLSSORT(MID,'NLS_SORT=generic_m_ci' ))
+		WHERE RN > (#{cri.pageNo}-1)* #{cri.amount} AND
+		(UPPER(MNAME) LIKE UPPER('%'||#{keyword}||'%')) 
+		]]>
+	</select>
+	
+	
+	<select id="reporterListPaging" resultType="com.AllTimes.dto.ReporterDto"><!-- CDTA를 사용해서 부등호 사용 -->
+	<![CDATA[
+		SELECT RID, RNAME, RSTATE, RMAIL
+		FROM (
+		SELECT /*+INDEX(REPORTER PK_RID) */ ROW_NUMBER() OVER (ORDER BY RID) RN, RID, RPW, RNAME, RSTATE, RMAIL, RPROFILE, RCONTACT 
+		FROM REPORTER WHERE ROWNUM <= #{pageNo}*#{amount} ORDER BY NLSSORT(RID,'NLS_SORT=generic_m_ci' ))
+		WHERE RN > (#{pageNo}-1)* #{amount} 
+		]]>
+	</select>
+	
+	<select id="getTotalAccountR" resultType="int"> 
+		SELECT COUNT(*) FROM REPORTER 
+	</select>
+	
+	<select id="getSearchAccountR" resultType="int">
+		SELECT COUNT(*) FROM REPORTER 
+		WHERE
+		UPPER(RID) LIKE UPPER('%'||#{keyword}||'%') OR 
+		UPPER(RNAME) LIKE UPPER('%'||#{keyword}||'%')
+	</select>
+	
+	<select id="getTotalAccountM" resultType="int"> 
+		SELECT COUNT(*) FROM MEMBER 
+	</select>
+	
+	<select id="getSearchAccountM" resultType="int">
+		SELECT COUNT(*) FROM MEMBER 
+		WHERE
+		UPPER(MID) LIKE UPPER('%'||#{keyword}||'%') OR 
+		UPPER(MNAME) LIKE UPPER('%'||#{keyword}||'%')		
+	</select>
+</mapper> 
